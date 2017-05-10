@@ -13,8 +13,7 @@ const {
   get,
   set,
   run: { scheduleOnce, debounce, bind, next },
-  computed: { not },
-  getOwner
+  computed: { not }
 } = Ember;
 
 const assign = Ember.assign || Ember.merge;
