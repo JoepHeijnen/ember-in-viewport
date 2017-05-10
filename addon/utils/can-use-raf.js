@@ -15,7 +15,7 @@ function checkRAF(window, rAF, cAF) {
   for (x = 0; x < vendors.length && !window[rAF]; ++x) {
     window[rAF] = window[`${vendors[x]}RequestAnimationFrame`];
     window[cAF] = window[`${vendors[x]}CancelAnimationFrame`] ||
-    window[`${vendors[x]}CancelRequestAnimationFrame`];
+      window[`${vendors[x]}CancelRequestAnimationFrame`];
   }
 
   if (window[rAF] && window[cAF]) {
