@@ -65,15 +65,15 @@ export default Mixin.create({
 
   _startListening() {
     // Window is not always the container the user scrolls in.
-    const container = this.get('container') || window;
+    const contentView = this.get('contentView') || window;
 
-    if (this.get('viewportListeners').find(({context, event}) => context === container && event === 'scroll.scrollable') === undefined) {
-      this.get('viewportListeners').push({context: container, event: 'scroll.scrollable'});
+    if (this.get('viewportListeners').find(({context, event}) => context === contentView && event === 'scroll.scrollable') === undefined) {
+      this.get('viewportListeners').push({context: contentView, event: 'scroll.scrollable'});
     }
 
-    this._setInitialViewport(container);
+    this._setInitialViewport(contentView);
     this._addObserverIfNotSpying();
-    this._bindScrollDirectionListener(container, get(this, 'viewportScrollSensitivity'));
+    this._bindScrollDirectionListener(contentView, get(this, 'viewportScrollSensitivity'));
 
     if (!get(this, 'viewportUseRAF')) {
       get(this, 'viewportListeners').forEach((listener) => {
@@ -233,7 +233,7 @@ export default Mixin.create({
       $(context).off(`${event}.${elementId}`);
     });
 
-    const container = this.get('container') || window;
-    this._unbindScrollDirectionListener(container);
+    const contentView = this.get('contentView') || window;
+    this._unbindScrollDirectionListener(contentView);
   }
 });
