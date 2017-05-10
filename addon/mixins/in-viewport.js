@@ -3,6 +3,7 @@ import canUseDOM from 'ember-in-viewport/utils/can-use-dom';
 import canUseRAF from 'ember-in-viewport/utils/can-use-raf';
 import isInViewport from 'ember-in-viewport/utils/is-in-viewport';
 import checkScrollDirection from 'ember-in-viewport/utils/check-scroll-direction';
+import getOwner from 'ember-getowner-polyfill';
 
 const {
   Mixin,
@@ -64,15 +65,15 @@ export default Mixin.create({
 
   _startListening() {
     // Window is not always the container the user scrolls in.
-    const contentView = this.get('contentView') || window;
+    const container = this.get('container') || window;
 
-    if (this.get('viewportListeners').find(({context, event}) => context === contentView && event === 'scroll.scrollable') === undefined) {
-      this.get('viewportListeners').push({context: contentView, event: 'scroll.scrollable'});
+    if (this.get('viewportListeners').find(({context, event}) => context === container && event === 'scroll.scrollable') === undefined) {
+      this.get('viewportListeners').push({context: container, event: 'scroll.scrollable'});
     }
 
-    this._setInitialViewport(contentView);
+    this._setInitialViewport(container);
     this._addObserverIfNotSpying();
-    this._bindScrollDirectionListener(contentView, get(this, 'viewportScrollSensitivity'));
+    this._bindScrollDirectionListener(container, get(this, 'viewportScrollSensitivity'));
 
     if (!get(this, 'viewportUseRAF')) {
       get(this, 'viewportListeners').forEach((listener) => {
@@ -101,7 +102,7 @@ export default Mixin.create({
     const boundingClientRect = element.getBoundingClientRect();
 
     this._triggerDidAccessViewport(
-      isInViewport(
+      this._determineIsInViewport(
         boundingClientRect,
         $contextEl.innerHeight(),
         $contextEl.innerWidth(),
@@ -114,6 +115,10 @@ export default Mixin.create({
         bind(this, this._setViewportEntered, context)
       );
     }
+  },
+
+  _determineIsInViewport(boundingClientRect, height, width, tolerance) {
+    return isInViewport(boundingClientRect, height, width, tolerance);
   },
 
   _triggerDidScrollDirection($contextEl = null, sensitivity = 1) {
@@ -228,7 +233,7 @@ export default Mixin.create({
       $(context).off(`${event}.${elementId}`);
     });
 
-    const contentView = this.get('contentView') || window;
-    this._unbindScrollDirectionListener(contentView);
+    const container = this.get('container') || window;
+    this._unbindScrollDirectionListener(container);
   }
 });
